@@ -34,7 +34,6 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-   
    output$distPlot <- renderPlot({
      n <- input$bins
      delta <- 1/n
@@ -44,9 +43,12 @@ server <- function(input, output) {
        print(i)
        f[i] = f[i - 1] + delta * f[i - 1]
      }
-     data <- data.frame(x = 1:(n+1), y=f)
-     ggplot(data) + geom_point(aes(x=x, y=y)) + ylim(0, 3) +
-      geom_segment(x=0, y=exp(1), xend=n+1, yend=exp(1), col="red")
+     data <- data.frame(step = 1:(n+1), y=f)
+     p <- ggplot(data[1:n,]) +
+       geom_point(aes(x=step, y=y)) +
+       geom_segment(x=0, y=exp(1), xend=n+2, yend=exp(1), col="green") +
+       scale_y_continuous(limits=c(0, 3), labels = c(0, 1, 2, "2.718...", 3), breaks=c(0, 1, 2, exp(1), 3))
+     p + geom_point(data=data[n+1,], aes(x=step, y=y), col="red", shape=8, size=3)
    })
 }
 
